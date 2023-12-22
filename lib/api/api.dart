@@ -21,4 +21,7 @@ class Constants {
   static String onTheAir = "${movieUrl}tv/on_the_air";
   static String popularTv = "${movieUrl}tv/popular";
   static String topRatedTv = "${movieUrl}tv/top_rated";
+
+  static String trendingAll = "${movieUrl}trending/all/";
+  static String trendingMovie = "${movieUrl}trending/movie/";
 }

@@ -1,20 +1,20 @@
-class TopRate {
+class Tv {
   final int page;
-  final List<TopRatedResult> results;
+  final List<TvResult> results;
   final int totalPages;
   final int totalResults;
 
-  TopRate({
+  Tv({
     required this.page,
     required this.results,
     required this.totalPages,
     required this.totalResults,
   });
 
-  factory TopRate.fromJson(Map<String, dynamic> json) => TopRate(
+  factory Tv.fromJson(Map<String, dynamic> json) => Tv(
         page: json["page"],
-        results: List<TopRatedResult>.from(
-            json["results"].map((x) => TopRatedResult.fromJson(x))),
+        results: List<TvResult>.from(
+            json["results"].map((x) => TvResult.fromJson(x))),
         totalPages: json["total_pages"],
         totalResults: json["total_results"],
       );
@@ -27,52 +27,52 @@ class TopRate {
       };
 }
 
-class TopRatedResult {
+class TvResult {
   final bool adult;
-  final String backdropPath;
+  final String? backdropPath;
   final List<int> genreIds;
   final int id;
+  final List<String> originCountry;
   final String originalLanguage;
-  final String originalTitle;
+  final String originalName;
   final String overview;
   final double popularity;
   final String posterPath;
-  final DateTime releaseDate;
-  final String title;
-  final bool video;
+  final DateTime firstAirDate;
+  final String name;
   final double voteAverage;
   final int voteCount;
 
-  TopRatedResult({
+  TvResult({
     required this.adult,
     required this.backdropPath,
     required this.genreIds,
     required this.id,
+    required this.originCountry,
     required this.originalLanguage,
-    required this.originalTitle,
+    required this.originalName,
     required this.overview,
     required this.popularity,
     required this.posterPath,
-    required this.releaseDate,
-    required this.title,
-    required this.video,
+    required this.firstAirDate,
+    required this.name,
     required this.voteAverage,
     required this.voteCount,
   });
 
-  factory TopRatedResult.fromJson(Map<String, dynamic> json) => TopRatedResult(
+  factory TvResult.fromJson(Map<String, dynamic> json) => TvResult(
         adult: json["adult"],
         backdropPath: json["backdrop_path"],
         genreIds: List<int>.from(json["genre_ids"].map((x) => x)),
         id: json["id"],
+        originCountry: List<String>.from(json["origin_country"].map((x) => x)),
         originalLanguage: json["original_language"],
-        originalTitle: json["original_title"],
+        originalName: json["original_name"],
         overview: json["overview"],
         popularity: json["popularity"]?.toDouble(),
         posterPath: json["poster_path"],
-        releaseDate: DateTime.parse(json["release_date"]),
-        title: json["title"],
-        video: json["video"],
+        firstAirDate: DateTime.parse(json["first_air_date"]),
+        name: json["name"],
         voteAverage: json["vote_average"]?.toDouble(),
         voteCount: json["vote_count"],
       );
@@ -82,15 +82,15 @@ class TopRatedResult {
         "backdrop_path": backdropPath,
         "genre_ids": List<dynamic>.from(genreIds.map((x) => x)),
         "id": id,
+        "origin_country": List<dynamic>.from(originCountry.map((x) => x)),
         "original_language": originalLanguage,
-        "original_title": originalTitle,
+        "original_name": originalName,
         "overview": overview,
         "popularity": popularity,
         "poster_path": posterPath,
-        "release_date":
-            "${releaseDate.year.toString().padLeft(4, '0')}-${releaseDate.month.toString().padLeft(2, '0')}-${releaseDate.day.toString().padLeft(2, '0')}",
-        "title": title,
-        "video": video,
+        "first_air_date":
+            "${firstAirDate.year.toString().padLeft(4, '0')}-${firstAirDate.month.toString().padLeft(2, '0')}-${firstAirDate.day.toString().padLeft(2, '0')}",
+        "name": name,
         "vote_average": voteAverage,
         "vote_count": voteCount,
       };

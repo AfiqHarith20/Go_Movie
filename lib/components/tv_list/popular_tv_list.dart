@@ -9,7 +9,7 @@ class PopularTvList extends StatefulWidget {
   State<PopularTvList> createState() => _PopularTvListState();
 }
 
-Future<List<PopularTvResult>> fetchPopularTvfromAPI() async {
+Future<List<TvResult>> fetchPopularTvfromAPI() async {
   final url = Uri.parse(Constants.popularTv);
   final http.Response response = await http.get(
     url,
@@ -22,8 +22,8 @@ Future<List<PopularTvResult>> fetchPopularTvfromAPI() async {
   if (response.statusCode == 200) {
     final Map<String, dynamic> json = jsonDecode(response.body);
     // print('API Now Playing Response: $json');
-    List<PopularTvResult> popularTv = List.from(json['results']
-        .map((resultJson) => PopularTvResult.fromJson(resultJson)));
+    List<TvResult> popularTv = List.from(
+        json['results'].map((resultJson) => TvResult.fromJson(resultJson)));
     return popularTv;
   } else {
     throw Exception(
@@ -32,7 +32,7 @@ Future<List<PopularTvResult>> fetchPopularTvfromAPI() async {
 }
 
 class _PopularTvListState extends State<PopularTvList> {
-  late Future<List<PopularTvResult>> _popularTV;
+  late Future<List<TvResult>> _popularTV;
 
   @override
   void initState() {
@@ -42,7 +42,7 @@ class _PopularTvListState extends State<PopularTvList> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<PopularTvResult>>(
+    return FutureBuilder<List<TvResult>>(
       future: _popularTV,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -58,7 +58,7 @@ class _PopularTvListState extends State<PopularTvList> {
             child: Text('No now playing movies available.'),
           );
         } else {
-          List<PopularTvResult> popularTvResult = snapshot.data!;
+          List<TvResult> popularTvResult = snapshot.data!;
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -68,15 +68,15 @@ class _PopularTvListState extends State<PopularTvList> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('Popular', style: AppTextStyle.textmedium),
-                    GestureDetector(
-                      onTap: () {
-                        // Handle the "View All" button press
-                      },
-                      child: Text(
-                        'View All',
-                        style: AppTextStyle.textlink,
-                      ),
-                    ),
+                    // GestureDetector(
+                    //   onTap: () {
+                    //     // Handle the "View All" button press
+                    //   },
+                    //   child: Text(
+                    //     'View All',
+                    //     style: AppTextStyle.textlink,
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
@@ -85,24 +85,37 @@ class _PopularTvListState extends State<PopularTvList> {
                 child: Row(
                   children: [
                     ...popularTvResult.map((movie) {
-                      return Container(
-                        width: 30.w,
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: 8.0,
-                          vertical: 8.0,
-                        ),
-                        child: Column(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(16.0),
-                              child: Image.network(
-                                'https://image.tmdb.org/t/p/w200${movie.posterPath}',
-                                width: 100,
-                                height: 150,
-                                fit: BoxFit.cover,
+                      return GestureDetector(
+                        onTap: () {
+                          // Navigate to the detail page when the image is clicked
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => TvDetailPage(
+                                tvResult: movie,
                               ),
                             ),
-                          ],
+                          );
+                        },
+                        child: Container(
+                          width: 30.w,
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 8.0,
+                            vertical: 8.0,
+                          ),
+                          child: Column(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(16.0),
+                                child: Image.network(
+                                  'https://image.tmdb.org/t/p/w200${movie.posterPath}',
+                                  width: 24.w,
+                                  height: 18.h,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     }).toList(),

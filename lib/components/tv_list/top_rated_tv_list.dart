@@ -9,7 +9,7 @@ class TopRatedTVList extends StatefulWidget {
   State<TopRatedTVList> createState() => _TopRatedTVListState();
 }
 
-Future<List<TopRatedTvResult>> fetchTopRatedTvfromAPI() async {
+Future<List<TvResult>> fetchTopRatedTvfromAPI() async {
   final url = Uri.parse(Constants.topRatedTv);
   final http.Response response = await http.get(
     url,
@@ -22,8 +22,8 @@ Future<List<TopRatedTvResult>> fetchTopRatedTvfromAPI() async {
   if (response.statusCode == 200) {
     final Map<String, dynamic> json = jsonDecode(response.body);
     // print('API Now Playing Response: $json');
-    List<TopRatedTvResult> topRatedTv = List.from(json['results']
-        .map((resultJson) => TopRatedTvResult.fromJson(resultJson)));
+    List<TvResult> topRatedTv = List.from(
+        json['results'].map((resultJson) => TvResult.fromJson(resultJson)));
     return topRatedTv;
   } else {
     throw Exception(
@@ -32,7 +32,7 @@ Future<List<TopRatedTvResult>> fetchTopRatedTvfromAPI() async {
 }
 
 class _TopRatedTVListState extends State<TopRatedTVList> {
-  late Future<List<TopRatedTvResult>> _topRatedTV;
+  late Future<List<TvResult>> _topRatedTV;
 
   @override
   void initState() {
@@ -42,7 +42,7 @@ class _TopRatedTVListState extends State<TopRatedTVList> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<TopRatedTvResult>>(
+    return FutureBuilder<List<TvResult>>(
       future: _topRatedTV,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -58,7 +58,7 @@ class _TopRatedTVListState extends State<TopRatedTVList> {
             child: Text('No now playing movies available.'),
           );
         } else {
-          List<TopRatedTvResult> topRatedResult = snapshot.data!;
+          List<TvResult> topRatedResult = snapshot.data!;
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -68,15 +68,15 @@ class _TopRatedTVListState extends State<TopRatedTVList> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('Top Rated', style: AppTextStyle.textmedium),
-                    GestureDetector(
-                      onTap: () {
-                        // Handle the "View All" button press
-                      },
-                      child: Text(
-                        'View All',
-                        style: AppTextStyle.textlink,
-                      ),
-                    ),
+                    // GestureDetector(
+                    //   onTap: () {
+                    //     // Handle the "View All" button press
+                    //   },
+                    //   child: Text(
+                    //     'View All',
+                    //     style: AppTextStyle.textlink,
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
@@ -85,24 +85,37 @@ class _TopRatedTVListState extends State<TopRatedTVList> {
                 child: Row(
                   children: [
                     ...topRatedResult.map((movie) {
-                      return Container(
-                        width: 30.w,
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: 8.0,
-                          vertical: 8.0,
-                        ),
-                        child: Column(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(16.0),
-                              child: Image.network(
-                                'https://image.tmdb.org/t/p/w200${movie.posterPath}',
-                                width: 100,
-                                height: 150,
-                                fit: BoxFit.cover,
+                      return GestureDetector(
+                        onTap: () {
+                          // Navigate to the detail page when the image is clicked
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => TvDetailPage(
+                                tvResult: movie,
                               ),
                             ),
-                          ],
+                          );
+                        },
+                        child: Container(
+                          width: 30.w,
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 8.0,
+                            vertical: 8.0,
+                          ),
+                          child: Column(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(16.0),
+                                child: Image.network(
+                                  'https://image.tmdb.org/t/p/w200${movie.posterPath}',
+                                  width: 24.w,
+                                  height: 18.h,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     }).toList(),

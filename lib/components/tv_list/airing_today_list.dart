@@ -9,7 +9,7 @@ class AiringTodayList extends StatefulWidget {
   State<AiringTodayList> createState() => _AiringTodayListState();
 }
 
-Future<List<AiringTodayResult>> fetchAiringTodayfromAPI() async {
+Future<List<TvResult>> fetchAiringTodayfromAPI() async {
   final url = Uri.parse(Constants.airingToday);
   final http.Response response = await http.get(
     url,
@@ -22,8 +22,8 @@ Future<List<AiringTodayResult>> fetchAiringTodayfromAPI() async {
   if (response.statusCode == 200) {
     final Map<String, dynamic> json = jsonDecode(response.body);
     // print('API Now Playing Response: $json');
-    List<AiringTodayResult> airingToday = List.from(json['results']
-        .map((resultJson) => AiringTodayResult.fromJson(resultJson)));
+    List<TvResult> airingToday = List.from(
+        json['results'].map((resultJson) => TvResult.fromJson(resultJson)));
     return airingToday;
   } else {
     throw Exception(
@@ -32,7 +32,7 @@ Future<List<AiringTodayResult>> fetchAiringTodayfromAPI() async {
 }
 
 class _AiringTodayListState extends State<AiringTodayList> {
-  late Future<List<AiringTodayResult>> _airingTodayTV;
+  late Future<List<TvResult>> _airingTodayTV;
 
   @override
   void initState() {
@@ -42,7 +42,7 @@ class _AiringTodayListState extends State<AiringTodayList> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<AiringTodayResult>>(
+    return FutureBuilder<List<TvResult>>(
       future: _airingTodayTV,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -58,7 +58,7 @@ class _AiringTodayListState extends State<AiringTodayList> {
             child: Text('No now playing movies available.'),
           );
         } else {
-          List<AiringTodayResult> airingTodayResult = snapshot.data!;
+          List<TvResult> airingTodayResult = snapshot.data!;
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -68,15 +68,15 @@ class _AiringTodayListState extends State<AiringTodayList> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('Airing Today', style: AppTextStyle.textmedium),
-                    GestureDetector(
-                      onTap: () {
-                        // Handle the "View All" button press
-                      },
-                      child: Text(
-                        'View All',
-                        style: AppTextStyle.textlink,
-                      ),
-                    ),
+                    // GestureDetector(
+                    //   onTap: () {
+                    //     // Handle the "View All" button press
+                    //   },
+                    //   child: Text(
+                    //     'View All',
+                    //     style: AppTextStyle.textlink,
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
@@ -85,24 +85,37 @@ class _AiringTodayListState extends State<AiringTodayList> {
                 child: Row(
                   children: [
                     ...airingTodayResult.map((movie) {
-                      return Container(
-                        width: 30.w,
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: 8.0,
-                          vertical: 8.0,
-                        ),
-                        child: Column(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(16.0),
-                              child: Image.network(
-                                'https://image.tmdb.org/t/p/w200${movie.posterPath}',
-                                width: 100,
-                                height: 150,
-                                fit: BoxFit.cover,
+                      return GestureDetector(
+                        onTap: () {
+                          // Navigate to the detail page when the image is clicked
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => TvDetailPage(
+                                tvResult: movie,
                               ),
                             ),
-                          ],
+                          );
+                        },
+                        child: Container(
+                          width: 30.w,
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 8.0,
+                            vertical: 8.0,
+                          ),
+                          child: Column(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(16.0),
+                                child: Image.network(
+                                  'https://image.tmdb.org/t/p/w200${movie.posterPath}',
+                                  width: 24.w,
+                                  height: 18.h,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     }).toList(),

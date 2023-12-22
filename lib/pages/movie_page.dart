@@ -51,7 +51,7 @@ class _HomePageState extends State<MoviePage> {
         backgroundColor: lightColorScheme.primary,
         title: Text(
           "Movie",
-          style: AppTextStyle.titleLarge,
+          style: AppTextStyle.titleMedium,
         ),
       ),
       body: SafeArea(

@@ -9,7 +9,7 @@ class UpComingList extends StatefulWidget {
   State<UpComingList> createState() => _UpComingListState();
 }
 
-Future<List<UpComingResult>> fetchUpComingfromAPI() async {
+Future<List<MovieResult>> fetchUpComingfromAPI() async {
   final url = Uri.parse(Constants.upComing);
   final http.Response response = await http.get(
     url,
@@ -22,8 +22,8 @@ Future<List<UpComingResult>> fetchUpComingfromAPI() async {
   if (response.statusCode == 200) {
     final Map<String, dynamic> json = jsonDecode(response.body);
     // print('API Now Playing Response: $json');
-    List<UpComingResult> topRated = List.from(json['results']
-        .map((resultJson) => UpComingResult.fromJson(resultJson)));
+    List<MovieResult> topRated = List.from(
+        json['results'].map((resultJson) => MovieResult.fromJson(resultJson)));
     return topRated;
   } else {
     throw Exception(
@@ -32,7 +32,7 @@ Future<List<UpComingResult>> fetchUpComingfromAPI() async {
 }
 
 class _UpComingListState extends State<UpComingList> {
-  late Future<List<UpComingResult>> _upComingMovies;
+  late Future<List<MovieResult>> _upComingMovies;
 
   @override
   void initState() {
@@ -42,7 +42,7 @@ class _UpComingListState extends State<UpComingList> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<UpComingResult>>(
+    return FutureBuilder<List<MovieResult>>(
       future: _upComingMovies,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -58,7 +58,7 @@ class _UpComingListState extends State<UpComingList> {
             child: Text('No now playing movies available.'),
           );
         } else {
-          List<UpComingResult> upComingMovies = snapshot.data!;
+          List<MovieResult> upComingMovies = snapshot.data!;
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -68,15 +68,15 @@ class _UpComingListState extends State<UpComingList> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('Up Coming', style: AppTextStyle.textmedium),
-                    GestureDetector(
-                      onTap: () {
-                        // Handle the "View All" button press
-                      },
-                      child: Text(
-                        'View All',
-                        style: AppTextStyle.textlink,
-                      ),
-                    ),
+                    // GestureDetector(
+                    //   onTap: () {
+                    //     // Handle the "View All" button press
+                    //   },
+                    //   child: Text(
+                    //     'View All',
+                    //     style: AppTextStyle.textlink,
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
@@ -85,24 +85,37 @@ class _UpComingListState extends State<UpComingList> {
                 child: Row(
                   children: [
                     ...upComingMovies.map((movie) {
-                      return Container(
-                        width: 30.w,
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: 8.0,
-                          vertical: 8.0,
-                        ),
-                        child: Column(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(16.0),
-                              child: Image.network(
-                                'https://image.tmdb.org/t/p/w200${movie.posterPath}',
-                                width: 100,
-                                height: 150,
-                                fit: BoxFit.cover,
+                      return GestureDetector(
+                        onTap: () {
+                          // Navigate to the detail page when the image is clicked
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MovieDetailPage(
+                                movieResult: movie,
                               ),
                             ),
-                          ],
+                          );
+                        },
+                        child: Container(
+                          width: 30.w,
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 8.0,
+                            vertical: 8.0,
+                          ),
+                          child: Column(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(16.0),
+                                child: Image.network(
+                                  'https://image.tmdb.org/t/p/w200${movie.posterPath}',
+                                  width: 24.w,
+                                  height: 18.h,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     }).toList(),

@@ -9,7 +9,7 @@ class PopularMovieList extends StatefulWidget {
   State<PopularMovieList> createState() => _PopularMovieListState();
 }
 
-Future<List<PopularMovieResult>> fetchPopularfromAPI() async {
+Future<List<MovieResult>> fetchPopularfromAPI() async {
   final url = Uri.parse(Constants.popularMovie);
   final http.Response response = await http.get(
     url,
@@ -22,8 +22,8 @@ Future<List<PopularMovieResult>> fetchPopularfromAPI() async {
   if (response.statusCode == 200) {
     final Map<String, dynamic> json = jsonDecode(response.body);
     // print('API Now Playing Response: $json');
-    List<PopularMovieResult> popular = List.from(json['results']
-        .map((resultJson) => PopularMovieResult.fromJson(resultJson)));
+    List<MovieResult> popular = List.from(
+        json['results'].map((resultJson) => MovieResult.fromJson(resultJson)));
     return popular;
   } else {
     throw Exception(
@@ -32,7 +32,7 @@ Future<List<PopularMovieResult>> fetchPopularfromAPI() async {
 }
 
 class _PopularMovieListState extends State<PopularMovieList> {
-  late Future<List<PopularMovieResult>> _popularMovies;
+  late Future<List<MovieResult>> _popularMovies;
 
   @override
   void initState() {
@@ -42,7 +42,7 @@ class _PopularMovieListState extends State<PopularMovieList> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<PopularMovieResult>>(
+    return FutureBuilder<List<MovieResult>>(
       future: _popularMovies,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -58,7 +58,7 @@ class _PopularMovieListState extends State<PopularMovieList> {
             child: Text('No now playing movies available.'),
           );
         } else {
-          List<PopularMovieResult> popularMovies = snapshot.data!;
+          List<MovieResult> popularMovies = snapshot.data!;
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -68,15 +68,15 @@ class _PopularMovieListState extends State<PopularMovieList> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('Popular', style: AppTextStyle.textmedium),
-                    GestureDetector(
-                      onTap: () {
-                        // Handle the "View All" button press
-                      },
-                      child: Text(
-                        'View All',
-                        style: AppTextStyle.textlink,
-                      ),
-                    ),
+                    // GestureDetector(
+                    //   onTap: () {
+                    //     // Handle the "View All" button press
+                    //   },
+                    //   child: Text(
+                    //     'View All',
+                    //     style: AppTextStyle.textlink,
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
@@ -85,24 +85,37 @@ class _PopularMovieListState extends State<PopularMovieList> {
                 child: Row(
                   children: [
                     ...popularMovies.map((movie) {
-                      return Container(
-                        width: 30.w,
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: 8.0,
-                          vertical: 8.0,
-                        ),
-                        child: Column(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(16.0),
-                              child: Image.network(
-                                'https://image.tmdb.org/t/p/w200${movie.posterPath}',
-                                width: 100,
-                                height: 150,
-                                fit: BoxFit.cover,
+                      return GestureDetector(
+                        onTap: () {
+                          // Navigate to the detail page when the image is clicked
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MovieDetailPage(
+                                movieResult: movie,
                               ),
                             ),
-                          ],
+                          );
+                        },
+                        child: Container(
+                          width: 30.w,
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 8.0,
+                            vertical: 8.0,
+                          ),
+                          child: Column(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(16.0),
+                                child: Image.network(
+                                  'https://image.tmdb.org/t/p/w200${movie.posterPath}',
+                                  width: 24.w,
+                                  height: 18.h,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     }).toList(),

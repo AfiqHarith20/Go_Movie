@@ -51,7 +51,7 @@ class _TvPageState extends State<TvPage> {
         backgroundColor: lightColorScheme.primary,
         title: Text(
           "TV",
-          style: AppTextStyle.titleLarge,
+          style: AppTextStyle.titleMedium,
         ),
       ),
       body: SafeArea(

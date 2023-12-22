@@ -9,7 +9,7 @@ class OnTheAirList extends StatefulWidget {
   State<OnTheAirList> createState() => _OnTheAirListState();
 }
 
-Future<List<OnTheAirResult>> fetchOnTheAirfromAPI() async {
+Future<List<TvResult>> fetchOnTheAirfromAPI() async {
   final url = Uri.parse(Constants.onTheAir);
   final http.Response response = await http.get(
     url,
@@ -22,8 +22,8 @@ Future<List<OnTheAirResult>> fetchOnTheAirfromAPI() async {
   if (response.statusCode == 200) {
     final Map<String, dynamic> json = jsonDecode(response.body);
     // print('API Now Playing Response: $json');
-    List<OnTheAirResult> onTheAir = List.from(json['results']
-        .map((resultJson) => OnTheAirResult.fromJson(resultJson)));
+    List<TvResult> onTheAir = List.from(
+        json['results'].map((resultJson) => TvResult.fromJson(resultJson)));
     return onTheAir;
   } else {
     throw Exception(
@@ -32,7 +32,7 @@ Future<List<OnTheAirResult>> fetchOnTheAirfromAPI() async {
 }
 
 class _OnTheAirListState extends State<OnTheAirList> {
-  late Future<List<OnTheAirResult>> _onTheAirTV;
+  late Future<List<TvResult>> _onTheAirTV;
 
   @override
   void initState() {
@@ -42,7 +42,7 @@ class _OnTheAirListState extends State<OnTheAirList> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<OnTheAirResult>>(
+    return FutureBuilder<List<TvResult>>(
       future: _onTheAirTV,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -58,7 +58,7 @@ class _OnTheAirListState extends State<OnTheAirList> {
             child: Text('No now playing movies available.'),
           );
         } else {
-          List<OnTheAirResult> onTheAirResult = snapshot.data!;
+          List<TvResult> onTheAirResult = snapshot.data!;
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -68,15 +68,15 @@ class _OnTheAirListState extends State<OnTheAirList> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('On The Air', style: AppTextStyle.textmedium),
-                    GestureDetector(
-                      onTap: () {
-                        // Handle the "View All" button press
-                      },
-                      child: Text(
-                        'View All',
-                        style: AppTextStyle.textlink,
-                      ),
-                    ),
+                    // GestureDetector(
+                    //   onTap: () {
+                    //     // Handle the "View All" button press
+                    //   },
+                    //   child: Text(
+                    //     'View All',
+                    //     style: AppTextStyle.textlink,
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
@@ -85,24 +85,37 @@ class _OnTheAirListState extends State<OnTheAirList> {
                 child: Row(
                   children: [
                     ...onTheAirResult.map((movie) {
-                      return Container(
-                        width: 30.w,
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: 8.0,
-                          vertical: 8.0,
-                        ),
-                        child: Column(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(16.0),
-                              child: Image.network(
-                                'https://image.tmdb.org/t/p/w200${movie.posterPath}',
-                                width: 100,
-                                height: 150,
-                                fit: BoxFit.cover,
+                      return GestureDetector(
+                        onTap: () {
+                          // Navigate to the detail page when the image is clicked
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => TvDetailPage(
+                                tvResult: movie,
                               ),
                             ),
-                          ],
+                          );
+                        },
+                        child: Container(
+                          width: 30.w,
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 8.0,
+                            vertical: 8.0,
+                          ),
+                          child: Column(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(16.0),
+                                child: Image.network(
+                                  'https://image.tmdb.org/t/p/w200${movie.posterPath}',
+                                  width: 24.w,
+                                  height: 18.h,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     }).toList(),

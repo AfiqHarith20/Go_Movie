@@ -50,6 +50,9 @@ class _CustomNavBarState extends State<CustomNavBar> {
         case 1:
           _currentPage = const TvPage();
           break;
+        case 2:
+          _currentPage = const TrendingPage();
+          break;
       }
       _currentPage = AnimatedSwitcher(
         switchInCurve: Curves.easeOut,

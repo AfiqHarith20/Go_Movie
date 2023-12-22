@@ -9,7 +9,7 @@ class NowPlayingList extends StatefulWidget {
   State<NowPlayingList> createState() => _NowPlayingListState();
 }
 
-Future<List<NowPlayingResult>> fetchNowPlayingfromAPI() async {
+Future<List<MovieResult>> fetchNowPlayingAllfromAPI() async {
   final url = Uri.parse(Constants.nowPlaying);
   final http.Response response = await http.get(
     url,
@@ -22,8 +22,8 @@ Future<List<NowPlayingResult>> fetchNowPlayingfromAPI() async {
   if (response.statusCode == 200) {
     final Map<String, dynamic> json = jsonDecode(response.body);
     // print('API Now Playing Response: $json');
-    List<NowPlayingResult> nowPlaying = List.from(json['results']
-        .map((resultJson) => NowPlayingResult.fromJson(resultJson)));
+    List<MovieResult> nowPlaying = List.from(
+        json['results'].map((resultJson) => MovieResult.fromJson(resultJson)));
     return nowPlaying;
   } else {
     throw Exception(
@@ -32,17 +32,17 @@ Future<List<NowPlayingResult>> fetchNowPlayingfromAPI() async {
 }
 
 class _NowPlayingListState extends State<NowPlayingList> {
-  late Future<List<NowPlayingResult>> _nowPlayingMovies;
+  late Future<List<MovieResult>> _nowPlayingMovies;
 
   @override
   void initState() {
     super.initState();
-    _nowPlayingMovies = fetchNowPlayingfromAPI();
+    _nowPlayingMovies = fetchNowPlayingAllfromAPI();
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<NowPlayingResult>>(
+    return FutureBuilder<List<MovieResult>>(
       future: _nowPlayingMovies,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -58,7 +58,7 @@ class _NowPlayingListState extends State<NowPlayingList> {
             child: Text('No now playing movies available.'),
           );
         } else {
-          List<NowPlayingResult> nowPlayingMovies = snapshot.data!;
+          List<MovieResult> nowPlayingMovies = snapshot.data!;
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -68,15 +68,15 @@ class _NowPlayingListState extends State<NowPlayingList> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('Now Playing', style: AppTextStyle.textmedium),
-                    GestureDetector(
-                      onTap: () {
-                        // Handle the "View All" button press
-                      },
-                      child: Text(
-                        'View All',
-                        style: AppTextStyle.textlink,
-                      ),
-                    ),
+                    // GestureDetector(
+                    //   onTap: () {
+                    //     // Handle the "View All" button press
+                    //   },
+                    //   child: Text(
+                    //     'View All',
+                    //     style: AppTextStyle.textlink,
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
@@ -85,24 +85,37 @@ class _NowPlayingListState extends State<NowPlayingList> {
                 child: Row(
                   children: [
                     ...nowPlayingMovies.map((movie) {
-                      return Container(
-                        width: 30.w,
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: 8.0,
-                          vertical: 8.0,
-                        ),
-                        child: Column(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(16.0),
-                              child: Image.network(
-                                'https://image.tmdb.org/t/p/w200${movie.posterPath}',
-                                width: 100,
-                                height: 150,
-                                fit: BoxFit.cover,
+                      return GestureDetector(
+                        onTap: () {
+                          // Navigate to the detail page when the image is clicked
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MovieDetailPage(
+                                movieResult: movie,
                               ),
                             ),
-                          ],
+                          );
+                        },
+                        child: Container(
+                          width: 30.w,
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 8.0,
+                            vertical: 8.0,
+                          ),
+                          child: Column(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(16.0),
+                                child: Image.network(
+                                  'https://image.tmdb.org/t/p/w200${movie.posterPath}',
+                                  width: 24.w,
+                                  height: 18.h,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     }).toList(),

@@ -44,6 +44,7 @@ dependencies:
   convex_bottom_bar: ^3.2.0
   skeletonizer: ^0.8.0
   http: ^1.1.2
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:
