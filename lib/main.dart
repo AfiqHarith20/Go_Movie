@@ -14,16 +14,6 @@ class MyApp extends StatelessWidget {
     notFoundRedirectNamed: '/error',
   );
 
-  // Define a specific AppBarTheme
-  final AppBarTheme appBarTheme = AppBarTheme(
-    backgroundColor: lightColorScheme.primary,
-    // titleTextStyle: AppTextStyle.titleLarge.copyWith(
-    //   color: lightColorScheme.onPrimary,
-    // ),
-
-    // Add other app bar styles as needed
-  );
-
   MyApp({super.key});
 
   // This widget is the root of your application.
@@ -36,16 +26,6 @@ class MyApp extends StatelessWidget {
         routeInformationParser: BeamerParser(),
         backButtonDispatcher:
             BeamerBackButtonDispatcher(delegate: routerDelegate),
-        theme: ThemeData.from(colorScheme: lightColorScheme),
-        builder: (context, child) {
-          return Theme(
-            // Use the specific AppBarTheme for the app bar
-            data: ThemeData.from(colorScheme: lightColorScheme).copyWith(
-              appBarTheme: appBarTheme,
-            ),
-            child: child!,
-          );
-        },
       );
     });
   }

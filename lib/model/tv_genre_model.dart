@@ -1,13 +1,13 @@
-class Genre {
+class TvGenre {
   final int id;
   final String name;
 
-  Genre({
+  TvGenre({
     required this.id,
     required this.name,
   });
 
-  factory Genre.fromJson(Map<String, dynamic> json) => Genre(
+  factory TvGenre.fromJson(Map<String, dynamic> json) => TvGenre(
         id: json["id"],
         name: json["name"],
       );

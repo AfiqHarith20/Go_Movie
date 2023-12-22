@@ -2,11 +2,11 @@ import 'package:go_movie/system_all_library.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class GenreList extends StatelessWidget {
-  const GenreList({super.key});
+class TvGenreList extends StatelessWidget {
+  const TvGenreList({super.key});
 
-  Future<List<Genre>> fetchGenres() async {
-    final url = Uri.parse(Constants.genreMovie);
+  Future<List<TvGenre>> fetchTvGenres() async {
+    final url = Uri.parse(Constants.genreTv);
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     final http.Response response = await http.get(
@@ -21,8 +21,8 @@ class GenreList extends StatelessWidget {
     if (response.statusCode == 200) {
       final Map<String, dynamic> json = jsonDecode(response.body);
       final List<dynamic> genresData = json['genres'];
-      List<Genre> genres =
-          genresData.map((genreJson) => Genre.fromJson(genreJson)).toList();
+      List<TvGenre> genres =
+          genresData.map((genreJson) => TvGenre.fromJson(genreJson)).toList();
       return genres;
     } else {
       throw Exception(
@@ -32,8 +32,8 @@ class GenreList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Genre>>(
-      future: fetchGenres(), // Call your API to fetch genres
+    return FutureBuilder<List<TvGenre>>(
+      future: fetchTvGenres(), // Call your API to fetch genres
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const CircularProgressIndicator(); // Show loading indicator while fetching data
@@ -42,13 +42,13 @@ class GenreList extends StatelessWidget {
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return const Text('No genres available.');
         } else {
-          List<Genre> genres = snapshot.data!;
+          List<TvGenre> genres = snapshot.data!;
           return SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
               children: List.generate(
                 genres.length,
-                (index) => CustomButton(
+                (index) => CustomButtonTv(
                   title: genres[index].name,
                   onPressed: () => navigateTo(genres[index], context),
                 ),
@@ -60,17 +60,17 @@ class GenreList extends StatelessWidget {
     );
   }
 
-  void navigateTo(Genre genre, BuildContext context) {
+  void navigateTo(TvGenre genre, BuildContext context) {
     // You can handle navigation to a specific genre page here
     print('Navigate to genre: ${genre.name}');
   }
 }
 
-class CustomButton extends StatelessWidget {
+class CustomButtonTv extends StatelessWidget {
   final String title;
   final VoidCallback onPressed;
 
-  const CustomButton({
+  const CustomButtonTv({
     required this.title,
     required this.onPressed,
     Key? key,

@@ -12,4 +12,13 @@ class Constants {
   static String guestSession = "${movieUrl}authentication/guest_session/new";
   static String genreMovie = "${movieUrl}genre/movie/list";
   static String nowPlaying = "${movieUrl}movie/now_playing";
+  static String popularMovie = "${movieUrl}movie/popular";
+  static String topRated = "${movieUrl}movie/top_rated";
+  static String upComing = "${movieUrl}movie/upcoming";
+
+  static String genreTv = "${movieUrl}genre/tv/list";
+  static String airingToday = "${movieUrl}tv/airing_today";
+  static String onTheAir = "${movieUrl}tv/on_the_air";
+  static String popularTv = "${movieUrl}tv/popular";
+  static String topRatedTv = "${movieUrl}tv/top_rated";
 }

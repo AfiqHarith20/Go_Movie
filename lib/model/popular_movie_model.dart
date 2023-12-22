@@ -1,31 +1,27 @@
 // ignore_for_file: constant_identifier_names
 
-class NowPlaying {
-  final NowPlayingDates nowPlayingDates;
+class PopularMovie {
   final int page;
-  final List<NowPlayingResult> results;
+  final List<PopularMovieResult> results;
   final int totalPages;
   final int totalResults;
 
-  NowPlaying({
-    required this.nowPlayingDates,
+  PopularMovie({
     required this.page,
     required this.results,
     required this.totalPages,
     required this.totalResults,
   });
 
-  factory NowPlaying.fromJson(Map<String, dynamic> json) => NowPlaying(
-        nowPlayingDates: NowPlayingDates.fromJson(json["dates"]),
+  factory PopularMovie.fromJson(Map<String, dynamic> json) => PopularMovie(
         page: json["page"],
-        results: List<NowPlayingResult>.from(
-            json["results"].map((x) => NowPlayingResult.fromJson(x))),
+        results: List<PopularMovieResult>.from(
+            json["results"].map((x) => PopularMovieResult.fromJson(x))),
         totalPages: json["total_pages"],
         totalResults: json["total_results"],
       );
 
   Map<String, dynamic> toJson() => {
-        "dates": nowPlayingDates.toJson(),
         "page": page,
         "results": List<dynamic>.from(results.map((x) => x.toJson())),
         "total_pages": totalPages,
@@ -33,35 +29,12 @@ class NowPlaying {
       };
 }
 
-class NowPlayingDates {
-  final DateTime maximum;
-  final DateTime minimum;
-
-  NowPlayingDates({
-    required this.maximum,
-    required this.minimum,
-  });
-
-  factory NowPlayingDates.fromJson(Map<String, dynamic> json) =>
-      NowPlayingDates(
-        maximum: DateTime.parse(json["maximum"]),
-        minimum: DateTime.parse(json["minimum"]),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "maximum":
-            "${maximum.year.toString().padLeft(4, '0')}-${maximum.month.toString().padLeft(2, '0')}-${maximum.day.toString().padLeft(2, '0')}",
-        "minimum":
-            "${minimum.year.toString().padLeft(4, '0')}-${minimum.month.toString().padLeft(2, '0')}-${minimum.day.toString().padLeft(2, '0')}",
-      };
-}
-
-class NowPlayingResult {
+class PopularMovieResult {
   final bool adult;
-  final String? backdropPath;
+  final String backdropPath;
   final List<int> genreIds;
   final int id;
-  final OriginalLanguageNowPlaying originalLanguage;
+  final OriginalLanguagePopular originalLanguage;
   final String originalTitle;
   final String overview;
   final double popularity;
@@ -72,7 +45,7 @@ class NowPlayingResult {
   final double voteAverage;
   final int voteCount;
 
-  NowPlayingResult({
+  PopularMovieResult({
     required this.adult,
     required this.backdropPath,
     required this.genreIds,
@@ -89,14 +62,14 @@ class NowPlayingResult {
     required this.voteCount,
   });
 
-  factory NowPlayingResult.fromJson(Map<String, dynamic> json) =>
-      NowPlayingResult(
+  factory PopularMovieResult.fromJson(Map<String, dynamic> json) =>
+      PopularMovieResult(
         adult: json["adult"],
         backdropPath: json["backdrop_path"],
         genreIds: List<int>.from(json["genre_ids"].map((x) => x)),
         id: json["id"],
         originalLanguage:
-            originalLanguageValuesNowPlaying.map[json["original_language"]]!,
+            originalLanguageValuesPopular.map[json["original_language"]]!,
         originalTitle: json["original_title"],
         overview: json["overview"],
         popularity: json["popularity"]?.toDouble(),
@@ -114,7 +87,7 @@ class NowPlayingResult {
         "genre_ids": List<dynamic>.from(genreIds.map((x) => x)),
         "id": id,
         "original_language":
-            originalLanguageValuesNowPlaying.reverse[originalLanguage],
+            originalLanguageValuesPopular.reverse[originalLanguage],
         "original_title": originalTitle,
         "overview": overview,
         "popularity": popularity,
@@ -128,20 +101,19 @@ class NowPlayingResult {
       };
 }
 
-enum OriginalLanguageNowPlaying { EN, ES, JA, NO }
+enum OriginalLanguagePopular { EN, KO, NO }
 
-final originalLanguageValuesNowPlaying = EnumValuesNowPlaying({
-  "en": OriginalLanguageNowPlaying.EN,
-  "es": OriginalLanguageNowPlaying.ES,
-  "ja": OriginalLanguageNowPlaying.JA,
-  "no": OriginalLanguageNowPlaying.NO
+final originalLanguageValuesPopular = EnumValuesPopular({
+  "en": OriginalLanguagePopular.EN,
+  "ko": OriginalLanguagePopular.KO,
+  "no": OriginalLanguagePopular.NO
 });
 
-class EnumValuesNowPlaying<T> {
+class EnumValuesPopular<T> {
   Map<String, T> map;
   late Map<T, String> reverseMap;
 
-  EnumValuesNowPlaying(this.map);
+  EnumValuesPopular(this.map);
 
   Map<T, String> get reverse {
     reverseMap = map.map((k, v) => MapEntry(v, k));

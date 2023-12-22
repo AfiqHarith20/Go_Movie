@@ -1,14 +1,14 @@
 import 'package:go_movie/system_all_library.dart';
 import 'dart:async';
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class TvPage extends StatefulWidget {
+  const TvPage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<TvPage> createState() => _TvPageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _TvPageState extends State<TvPage> {
   bool _loading = true;
   Timer? _timer;
 
@@ -48,8 +48,9 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: lightColorScheme.primary,
         title: Text(
-          "Go Movie",
+          "TV",
           style: AppTextStyle.titleLarge,
         ),
       ),
@@ -65,11 +66,23 @@ class _HomePageState extends State<HomePage> {
               children: <Widget>[
                 Skeletonizer(
                   enabled: _loading,
-                  child: const GenreList(), // Pass context here
+                  child: const TvGenreList(), // Pass context here
                 ),
                 Skeletonizer(
                   enabled: _loading,
-                  child: const NowPlayingPage(), // Pass context here
+                  child: const AiringTodayList(), // Pass context here
+                ),
+                Skeletonizer(
+                  enabled: _loading,
+                  child: const OnTheAirList(), // Pass context here
+                ),
+                Skeletonizer(
+                  enabled: _loading,
+                  child: const PopularTvList(), // Pass context here
+                ),
+                Skeletonizer(
+                  enabled: _loading,
+                  child: const TopRatedTVList(), // Pass context here
                 ),
               ],
             ),

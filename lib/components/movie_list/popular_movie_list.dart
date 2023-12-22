@@ -1,17 +1,16 @@
 import 'package:go_movie/system_all_library.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'dart:math';
 
-class NowPlayingPage extends StatefulWidget {
-  const NowPlayingPage({Key? key}) : super(key: key);
+class PopularMovieList extends StatefulWidget {
+  const PopularMovieList({super.key});
 
   @override
-  State<NowPlayingPage> createState() => _NowPlayingPageState();
+  State<PopularMovieList> createState() => _PopularMovieListState();
 }
 
-Future<List<Result>> fetchNowPlayingfromAPI() async {
-  final url = Uri.parse(Constants.nowPlaying);
+Future<List<PopularMovieResult>> fetchPopularfromAPI() async {
+  final url = Uri.parse(Constants.popularMovie);
   final http.Response response = await http.get(
     url,
     headers: {
@@ -22,29 +21,29 @@ Future<List<Result>> fetchNowPlayingfromAPI() async {
   );
   if (response.statusCode == 200) {
     final Map<String, dynamic> json = jsonDecode(response.body);
-    print('API Response: $json');
-    List<Result> nowPlaying = List.from(
-        json['results'].map((resultJson) => Result.fromJson(resultJson)));
-    return nowPlaying;
+    // print('API Now Playing Response: $json');
+    List<PopularMovieResult> popular = List.from(json['results']
+        .map((resultJson) => PopularMovieResult.fromJson(resultJson)));
+    return popular;
   } else {
     throw Exception(
         'Failed to fetch now playing movies. Status code: ${response.statusCode}');
   }
 }
 
-class _NowPlayingPageState extends State<NowPlayingPage> {
-  late Future<List<Result>> _nowPlayingMovies;
+class _PopularMovieListState extends State<PopularMovieList> {
+  late Future<List<PopularMovieResult>> _popularMovies;
 
   @override
   void initState() {
     super.initState();
-    _nowPlayingMovies = fetchNowPlayingfromAPI();
+    _popularMovies = fetchPopularfromAPI();
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Result>>(
-      future: _nowPlayingMovies,
+    return FutureBuilder<List<PopularMovieResult>>(
+      future: _popularMovies,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
@@ -56,10 +55,10 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
           );
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return const Center(
-            child: Text('No movies available.'),
+            child: Text('No now playing movies available.'),
           );
         } else {
-          List<Result> nowPlayingMovies = snapshot.data!;
+          List<PopularMovieResult> popularMovies = snapshot.data!;
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -68,7 +67,7 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Now Playing', style: AppTextStyle.textmedium),
+                    Text('Popular', style: AppTextStyle.textmedium),
                     GestureDetector(
                       onTap: () {
                         // Handle the "View All" button press
@@ -85,7 +84,7 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
-                    ...nowPlayingMovies.map((movie) {
+                    ...popularMovies.map((movie) {
                       return Container(
                         width: 30.w,
                         margin: const EdgeInsets.symmetric(
