@@ -47,7 +47,7 @@ class TrendingAllResult {
   final int voteCount;
   final String? name;
   final String? originalName;
-  final DateTime? firstAirDate;
+  final String? firstAirDate;
   final List<String>? originCountry;
 
   TrendingAllResult({
@@ -79,7 +79,7 @@ class TrendingAllResult {
         id: json["id"],
         title: json["title"],
         originalLanguage:
-            originalLanguageValuesTrendingAll.map[json["original_language"]]!,
+            originalLanguageValues.map[json["original_language"]]!,
         originalTitle: json["original_title"],
         overview: json["overview"],
         posterPath: json["poster_path"],
@@ -94,9 +94,7 @@ class TrendingAllResult {
         voteCount: json["vote_count"],
         name: json["name"],
         originalName: json["original_name"],
-        firstAirDate: json["first_air_date"] == null
-            ? null
-            : DateTime.parse(json["first_air_date"]),
+        firstAirDate: json["first_air_date"],
         originCountry: json["origin_country"] == null
             ? []
             : List<String>.from(json["origin_country"]!.map((x) => x)),
@@ -107,8 +105,7 @@ class TrendingAllResult {
         "backdrop_path": backdropPath,
         "id": id,
         "title": title,
-        "original_language":
-            originalLanguageValuesTrendingAll.reverse[originalLanguage],
+        "original_language": originalLanguageValues.reverse[originalLanguage],
         "original_title": originalTitle,
         "overview": overview,
         "poster_path": posterPath,
@@ -122,8 +119,7 @@ class TrendingAllResult {
         "vote_count": voteCount,
         "name": name,
         "original_name": originalName,
-        "first_air_date":
-            "${firstAirDate!.year.toString().padLeft(4, '0')}-${firstAirDate!.month.toString().padLeft(2, '0')}-${firstAirDate!.day.toString().padLeft(2, '0')}",
+        "first_air_date": firstAirDate,
         "origin_country": originCountry == null
             ? []
             : List<dynamic>.from(originCountry!.map((x) => x)),
@@ -135,11 +131,12 @@ enum MediaTypeTrendingAll { MOVIE, TV }
 final mediaTypeValues = EnumValuesTrendingAll(
     {"movie": MediaTypeTrendingAll.MOVIE, "tv": MediaTypeTrendingAll.TV});
 
-enum OriginalLanguageTrendingAll { EN, KO }
+enum OriginalLanguageTrendingAll { EN, KO, PT }
 
-final originalLanguageValuesTrendingAll = EnumValuesTrendingAll({
+final originalLanguageValues = EnumValuesTrendingAll({
   "en": OriginalLanguageTrendingAll.EN,
-  "ko": OriginalLanguageTrendingAll.KO
+  "ko": OriginalLanguageTrendingAll.KO,
+  "pt": OriginalLanguageTrendingAll.PT
 });
 
 class EnumValuesTrendingAll<T> {

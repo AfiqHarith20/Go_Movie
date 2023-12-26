@@ -38,6 +38,7 @@ export 'package:go_movie/model/tv_genre_model.dart';
 export 'package:go_movie/model/trending_all_model.dart';
 export 'package:go_movie/model/movie_model.dart';
 export 'package:go_movie/model/tv_model.dart';
+export 'package:go_movie/model/review_model.dart';
 
 //pages
 export 'package:go_movie/pages/movie_page.dart';

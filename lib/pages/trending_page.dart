@@ -12,23 +12,32 @@ class TrendingPage extends StatefulWidget {
 
 Future<List<TrendingAllResult>> fetchTrendingAllfromAPI(
     [String timeWindow = 'day']) async {
-  final url = Uri.parse('${Constants.trendingAll}/$timeWindow');
-  final http.Response response = await http.get(
-    url,
-    headers: {
-      'Authorization':
-          'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3ZDYxMWVkZWQ0YTBkYTg1YjUxMDY2MWNjN2EzNjE0MSIsInN1YiI6IjY1ODNiZGZlY2E4MzU0NDEwM2Q3NzZlMyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.8u8De19ZTQI0BnXy5ZZb8PGxrs-V7HFn3hGNAhPDODI',
-      'Content-Type': 'application/json',
-    },
-  );
-  if (response.statusCode == 200) {
-    final Map<String, dynamic> json = jsonDecode(response.body);
-    List<TrendingAllResult> trendingAll = List.from(json['results']
-        .map((resultJson) => TrendingAllResult.fromJson(resultJson)));
-    return trendingAll;
-  } else {
-    throw Exception(
-        'Failed to fetch now playing movies. Status code: ${response.statusCode}');
+  try {
+    final url = Uri.parse('${Constants.trendingAll}$timeWindow');
+    final http.Response response = await http.get(
+      url,
+      headers: {
+        'Authorization':
+            'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3ZDYxMWVkZWQ0YTBkYTg1YjUxMDY2MWNjN2EzNjE0MSIsInN1YiI6IjY1ODNiZGZlY2E4MzU0NDEwM2Q3NzZlMyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.8u8De19ZTQI0BnXy5ZZb8PGxrs-V7HFn3hGNAhPDODI',
+        'Content-Type': 'application/json',
+      },
+    );
+    print('Request URL: $url');
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> json = jsonDecode(response.body);
+      print('API Now Playing Response: $json');
+      List<TrendingAllResult> trendingAll = List.from(json['results']
+          .map((resultJson) => TrendingAllResult.fromJson(resultJson)));
+      // print('Raw date string: ${json["release_date"]}');
+
+      return trendingAll;
+    } else {
+      throw Exception(
+          'Failed to fetch now playing movies. Status code: ${response.statusCode}');
+    }
+  } catch (error) {
+    print('Error fetching trending items: $error');
+    throw error; // rethrow the error
   }
 }
 
@@ -36,6 +45,7 @@ class _TrendingPageState extends State<TrendingPage> {
   late Future<List<TrendingAllResult>> _trendingAll;
   bool _loading = true;
   Timer? _timer;
+  String _selectedTimeWindow = 'day';
 
   // Add a method to simulate content loading
   void loadData() {
@@ -76,9 +86,32 @@ class _TrendingPageState extends State<TrendingPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: lightColorScheme.primary,
-        title: Text(
-          "Trending",
-          style: AppTextStyle.titleMedium,
+        title: Row(
+          children: [
+            Text(
+              "Trending",
+              style: AppTextStyle.titleMedium,
+            ),
+            const Spacer(),
+            DropdownButton<String>(
+              value: _selectedTimeWindow,
+              onChanged: (String? newValue) {
+                if (newValue != null) {
+                  setState(() {
+                    print('Selected time window: $newValue');
+                    _selectedTimeWindow = newValue;
+                    _trendingAll = fetchTrendingAllfromAPI(newValue);
+                  });
+                }
+              },
+              items: <String>['day', 'week'].map((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+            ),
+          ],
         ),
       ),
       body: SafeArea(
@@ -95,16 +128,19 @@ class _TrendingPageState extends State<TrendingPage> {
                 FutureBuilder<List<TrendingAllResult>>(
                   future: _trendingAll,
                   builder: (context, snapshot) {
+                    print(
+                        'Snapshot connection state: ${snapshot.connectionState}');
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(
                         child: CircularProgressIndicator(),
                       );
                     } else if (snapshot.hasError) {
+                      print('Error message: ${snapshot.error}');
                       return const Center(
                         child: Text(
                             'Failed to load trending items. Please try again later.'),
                       );
-                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    } else if (!snapshot.hasData || snapshot.data == null) {
                       return const Center(
                         child: Text('No trending items available.'),
                       );
