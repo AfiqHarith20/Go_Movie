@@ -33,43 +33,43 @@ class TrendingAllResult {
   final bool adult;
   final String backdropPath;
   final int id;
-  final String? title;
+  final String title;
   final OriginalLanguageTrendingAll originalLanguage;
-  final String? originalTitle;
+  final String originalTitle;
   final String overview;
   final String posterPath;
   final MediaTypeTrendingAll mediaType;
   final List<int> genreIds;
   final double popularity;
-  final DateTime? releaseDate;
-  final bool? video;
+  final DateTime releaseDate;
+  final bool video;
   final double voteAverage;
   final int voteCount;
-  final String? name;
-  final String? originalName;
-  final String? firstAirDate;
-  final List<String>? originCountry;
+  final String name;
+  final String originalName;
+  final String firstAirDate;
+  final List<String> originCountry;
 
   TrendingAllResult({
     required this.adult,
     required this.backdropPath,
     required this.id,
-    this.title,
+    required this.title,
     required this.originalLanguage,
-    this.originalTitle,
+    required this.originalTitle,
     required this.overview,
     required this.posterPath,
     required this.mediaType,
     required this.genreIds,
     required this.popularity,
-    this.releaseDate,
-    this.video,
+    required this.releaseDate,
+    required this.video,
     required this.voteAverage,
     required this.voteCount,
-    this.name,
-    this.originalName,
-    this.firstAirDate,
-    this.originCountry,
+    required this.name,
+    required this.originalName,
+    required this.firstAirDate,
+    required this.originCountry,
   });
 
   factory TrendingAllResult.fromJson(Map<String, dynamic> json) =>
@@ -77,27 +77,35 @@ class TrendingAllResult {
         adult: json["adult"],
         backdropPath: json["backdrop_path"],
         id: json["id"],
-        title: json["title"],
+        title: json["title"] ?? "", // Provide a default value or handle null
         originalLanguage:
             originalLanguageValues.map[json["original_language"]]!,
-        originalTitle: json["original_title"],
-        overview: json["overview"],
-        posterPath: json["poster_path"],
+        originalTitle: json["original_title"] ??
+            "", // Provide a default value or handle null
+        overview:
+            json["overview"] ?? "", // Provide a default value or handle null
+        posterPath:
+            json["poster_path"] ?? "", // Provide a default value or handle null
         mediaType: mediaTypeValues.map[json["media_type"]]!,
         genreIds: List<int>.from(json["genre_ids"].map((x) => x)),
-        popularity: json["popularity"]?.toDouble(),
+        popularity: json["popularity"]?.toDouble() ??
+            0.0, // Provide a default value or handle null
         releaseDate: json["release_date"] == null
-            ? null
+            ? DateTime.now() // Provide a default value or handle null
             : DateTime.parse(json["release_date"]),
-        video: json["video"],
-        voteAverage: json["vote_average"]?.toDouble(),
-        voteCount: json["vote_count"],
-        name: json["name"],
-        originalName: json["original_name"],
-        firstAirDate: json["first_air_date"],
+        video: json["video"] ?? false, // Provide a default value or handle null
+        voteAverage: json["vote_average"]?.toDouble() ??
+            0.0, // Provide a default value or handle null
+        voteCount:
+            json["vote_count"] ?? 0, // Provide a default value or handle null
+        name: json["name"] ?? "", // Provide a default value or handle null
+        originalName: json["original_name"] ??
+            "", // Provide a default value or handle null
+        firstAirDate: json["first_air_date"] ??
+            "", // Provide a default value or handle null
         originCountry: json["origin_country"] == null
             ? []
-            : List<String>.from(json["origin_country"]!.map((x) => x)),
+            : List<String>.from(json["origin_country"].map((x) => x)),
       );
 
   Map<String, dynamic> toJson() => {
@@ -113,16 +121,14 @@ class TrendingAllResult {
         "genre_ids": List<dynamic>.from(genreIds.map((x) => x)),
         "popularity": popularity,
         "release_date":
-            "${releaseDate!.year.toString().padLeft(4, '0')}-${releaseDate!.month.toString().padLeft(2, '0')}-${releaseDate!.day.toString().padLeft(2, '0')}",
+            "${releaseDate.year.toString().padLeft(4, '0')}-${releaseDate.month.toString().padLeft(2, '0')}-${releaseDate.day.toString().padLeft(2, '0')}",
         "video": video,
         "vote_average": voteAverage,
         "vote_count": voteCount,
         "name": name,
         "original_name": originalName,
         "first_air_date": firstAirDate,
-        "origin_country": originCountry == null
-            ? []
-            : List<dynamic>.from(originCountry!.map((x) => x)),
+        "origin_country": originCountry,
       };
 }
 

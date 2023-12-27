@@ -120,6 +120,10 @@ class MovieDetailPage extends StatelessWidget {
               decoration: BoxDecoration(
                 color: lightColorScheme.tertiary,
                 borderRadius: BorderRadius.circular(8.0),
+                border: Border.all(
+                  color: lightColorScheme.secondary,
+                  width: 1.w,
+                ),
               ),
               child: Text(
                 movieResult.overview,
@@ -166,8 +170,12 @@ class MovieDetailPage extends StatelessWidget {
                     margin: const EdgeInsets.symmetric(vertical: 8),
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: lightColorScheme.tertiary,
+                      color: lightColorScheme.outlineVariant,
                       borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: lightColorScheme.primary,
+                        width: 1.w,
+                      ),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -178,7 +186,7 @@ class MovieDetailPage extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Content: ${reviewResult.content}',
+                          'Comment: ${reviewResult.content}',
                           style: AppTextStyle.textsmall,
                         ),
                         const SizedBox(height: 8),

@@ -98,8 +98,12 @@ class TrendingDetailPage extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8.0),
               decoration: BoxDecoration(
-                color: lightColorScheme.tertiary,
+                color: lightColorScheme.outlineVariant,
                 borderRadius: BorderRadius.circular(8.0),
+                border: Border.all(
+                  color: lightColorScheme.primary,
+                  width: 1.w,
+                ),
               ),
               child: Text(
                 trendingResult.overview,

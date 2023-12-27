@@ -23,21 +23,31 @@ Future<List<TrendingAllResult>> fetchTrendingAllfromAPI(
       },
     );
     print('Request URL: $url');
+
     if (response.statusCode == 200) {
       final Map<String, dynamic> json = jsonDecode(response.body);
-      print('API Now Playing Response: $json');
-      List<TrendingAllResult> trendingAll = List.from(json['results']
-          .map((resultJson) => TrendingAllResult.fromJson(resultJson)));
-      // print('Raw date string: ${json["release_date"]}');
+      print('API Now Playing Response: $json'); // Add this line for debugging
 
-      return trendingAll;
+      // Check if 'results' key exists and is not null
+      if (json['results'] != null) {
+        List<TrendingAllResult> trendingAll = List.from(json['results']
+            .map((resultJson) => TrendingAllResult.fromJson(resultJson)));
+        return trendingAll;
+      } else {
+        print(
+            'API Error: Results key is null or does not exist in the response');
+        throw Exception(
+            'Failed to fetch trending items: Results key is null or does not exist in the response');
+      }
     } else {
+      print('API Error: ${response.statusCode} - ${response.body}');
       throw Exception(
-          'Failed to fetch now playing movies. Status code: ${response.statusCode}');
+        'Failed to fetch trending items. Status code: ${response.statusCode}',
+      );
     }
   } catch (error) {
     print('Error fetching trending items: $error');
-    throw error; // rethrow the error
+    rethrow; // rethrow the error
   }
 }
 
@@ -45,7 +55,7 @@ class _TrendingPageState extends State<TrendingPage> {
   late Future<List<TrendingAllResult>> _trendingAll;
   bool _loading = true;
   Timer? _timer;
-  String _selectedTimeWindow = 'day';
+  late String _selectedTimeWindow;
 
   // Add a method to simulate content loading
   void loadData() {
@@ -71,6 +81,7 @@ class _TrendingPageState extends State<TrendingPage> {
     _timer = Timer.periodic(const Duration(seconds: 200), (Timer timer) {
       print("Timer tick");
       _trendingAll = fetchTrendingAllfromAPI();
+      _selectedTimeWindow = 'day';
     });
   }
 
@@ -86,33 +97,43 @@ class _TrendingPageState extends State<TrendingPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: lightColorScheme.primary,
-        title: Row(
-          children: [
-            Text(
-              "Trending",
-              style: AppTextStyle.titleMedium,
-            ),
-            const Spacer(),
-            DropdownButton<String>(
-              value: _selectedTimeWindow,
-              onChanged: (String? newValue) {
-                if (newValue != null) {
-                  setState(() {
-                    print('Selected time window: $newValue');
-                    _selectedTimeWindow = newValue;
-                    _trendingAll = fetchTrendingAllfromAPI(newValue);
-                  });
-                }
-              },
-              items: <String>['day', 'week'].map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-            ),
-          ],
+        title: Text(
+          "Trending",
+          style: AppTextStyle.titleMedium,
         ),
+        actions: [
+          PopupMenuButton<String>(
+            icon: const FaIcon(FontAwesomeIcons.sort),
+            onSelected: (String value) {
+              setState(() {
+                _selectedTimeWindow = value;
+                _trendingAll = fetchTrendingAllfromAPI(_selectedTimeWindow);
+              });
+            },
+            itemBuilder: (BuildContext context) => [
+              const PopupMenuItem<String>(
+                value: 'day',
+                child: Row(
+                  children: [
+                    FaIcon(FontAwesomeIcons.calendarDay),
+                    SizedBox(width: 8),
+                    Text('Sort by Day'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem<String>(
+                value: 'week',
+                child: Row(
+                  children: [
+                    FaIcon(FontAwesomeIcons.calendarWeek),
+                    SizedBox(width: 8),
+                    Text('Sort by Week'),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -136,11 +157,14 @@ class _TrendingPageState extends State<TrendingPage> {
                       );
                     } else if (snapshot.hasError) {
                       print('Error message: ${snapshot.error}');
-                      return const Center(
+                      return Center(
                         child: Text(
-                            'Failed to load trending items. Please try again later.'),
+                          'Failed to load trending items. Please try again later.',
+                          style: AppTextStyle.textmedium,
+                        ),
                       );
-                    } else if (!snapshot.hasData || snapshot.data == null) {
+                    } else if (snapshot.data == null ||
+                        snapshot.data!.isEmpty) {
                       return const Center(
                         child: Text('No trending items available.'),
                       );
